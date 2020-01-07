@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<MenuItems>
+
+
+    <MenuItem id="reDefineArduinoDevice">
+        <Name>reload config for arduino device</Name>
+        <ConfigUI>
+        <Field id="device"	type="menu" default="0" >
+            <Label>pick device </Label>
+                <List class="self" filter="" method="filterDevsArduino" dynamicReload="false"/>
+        </Field>
+        <Field  id="execReloadArduinoDevice" type="button"	>
+            <Label> ....after selection click</Label><Title>EXECUTE</Title> <CallbackMethod>reloadArduinoDeviceMenu</CallbackMethod>
+        </Field>
+        </ConfigUI>
+    </MenuItem>
+
+   <MenuItem id="setRelaySainsmart">
+        <Name>Set relay Sain Smart</Name>
+        <ConfigUI>
+        <Field id="device"	type="menu" default="0" >
+            <Label>pick device </Label>
+                <List class="self" filter="" method="filterDevsSainsmart" dynamicReload="false"/>
+        </Field>
+        
+        <Field id="CMD"		type="menu" default="ONoff" hidden= "yes"	 >
+            <List>
+                <Option value= "ONoff"      >ON/off </Option>
+            </List>
+            <Label> </Label>
+        </Field>
+        <Field id="lowHIGH"	visibleBinsdingId="CMD"	visibleBindingValue="ONoff"	type="menu" default="0"	 >
+            <List>
+                <Option value= "0">LOW  = 0 </Option>
+                <Option value= "1">HIGH = 1</Option>
+            </List>
+            <Label>set output of pin/variable  to  </Label>
+        </Field>
+        
+        <Field  id="execsetPin" type="button"	>
+            <Label> ....after selection click</Label><Title>EXECUTE</Title> <CallbackMethod>setPinCALLBACKmenu</CallbackMethod>
+        </Field>
+
+        </ConfigUI>
+    </MenuItem>
+
+
+    <MenuItem id="setPinsArduino">
+        <Name>Set Pin Value or Function</Name>
+        <ConfigUI>
+        <Field id="device"	type="menu" default="0" >
+            <Label>pick device </Label>
+                <List class="self" filter="" method="filterDevsArduino" dynamicReload="false"/>
+        </Field>
+        
+        <Field id="Pin"	type="menu" default="D5"	>
+            <List>
+                <Option value= "S0">S0 STRING Variable</Option>
+                <Option value= "S1">S1 STRING Variable</Option>
+                <Option value= "S2">S2 STRING Variable</Option>
+                <Option value= "S3">S3 STRING Variable</Option>
+                <Option value= "S4">S4 STRING Variable</Option>
+                <Option value= "S5">S5 STRING Variable</Option>
+                <Option value= "S6">S6 STRING Variable</Option>
+                <Option value= "S7">S7 STRING Variable</Option>
+                <Option value= "S8">S8 STRING Variable</Option>
+                <Option value= "S9">S9 STRING Variable</Option>
+
+                <Option value= "D0">D0 ARDUINO only use if enabled in arduino sketch + ESP16 </Option>
+                <Option value= "D1">D1 ARDUINO only use if enabled in arduino sketch </Option>
+                <Option value= "D2">D2 ARDUINO + ESP16 + ESP1</Option>
+                <Option value= "D3">D3 ARDUINO </Option>
+                <Option value= "D4">D4 ARDUINO + ESP16</Option>
+                <Option value= "D5">D5 ARDUINO + ESP16</Option>
+                <Option value= "D6">D6 ARDUINO </Option>
+                <Option value= "D7">D7 MKR </Option>
+                <Option value= "D8">D8 ARDUINO </Option>
+                <Option value= "D9">D9 ARDUINO </Option>
+                <Option value= "D10">D10 MKR-SPI  </Option>
+                <Option value= "D11">D11 MKR-SPI </Option>
+                <Option value= "D12">D12 ESP16  </Option>
+                <Option value= "D13">D13 ESP16 +MKR-RX </Option>
+                <Option value= "D14">D14 ESP16 +MEGA +MKR-TX</Option>
+                <Option value= "D15">D15 ESP16 +MEGA +MKR-DAC </Option>
+                <Option value= "D16">D16 ESP16 +MEGA  </Option>
+                <Option value= "D17">D17 MEGA </Option>
+                <Option value= "D18">D18 MEGA </Option>
+                <Option value= "D19">D19 ... </Option>
+                
+                
+                <Option value= "D20">D20 </Option>
+                <Option value= "D21">D21 </Option>
+                <Option value= "D22">D22 </Option>
+                <Option value= "D23">D23 </Option>
+                <Option value= "D24">D24 </Option>
+                <Option value= "D25">D25 </Option>
+                <Option value= "D26">D26 </Option>
+                <Option value= "D27">D27 </Option>
+                <Option value= "D28">D28 </Option>
+                <Option value= "D29">D29 </Option>
+                
+                <Option value= "D30">D30 </Option>
+                <Option value= "D31">D31 </Option>
+                <Option value= "D32">D32 </Option>
+                <Option value= "D33">D33 </Option>
+                <Option value= "D34">D34 </Option>
+                <Option value= "D35">D35 </Option>
+                <Option value= "D36">D36 </Option>
+                <Option value= "D37">D37 </Option>
+                <Option value= "D38">D38 </Option>
+                <Option value= "D39">D39 </Option>
+                
+                <Option value= "D40">D40 </Option>
+                <Option value= "D41">D41 </Option>
+                <Option value= "D42">D42 </Option>
+                <Option value= "D43">D43 </Option>
+                <Option value= "D44">D44 </Option>
+                <Option value= "D45">D45 </Option>
+                <Option value= "D46">D46 </Option>
+                <Option value= "D47">D47 </Option>
+                <Option value= "D48">D48 </Option>
+                <Option value= "D49">D49 </Option>
+                
+            </List>			<Label>pick pin </Label>
+        </Field>
+
+        <Field id="CMD"		type="menu" default="ONoff"	 >
+            <List>
+                <Option value= "read"       >read </Option>
+                <Option value= "ONoff"      >ON/off </Option>
+                <Option value= "analogWrite">ANALOG Write Value</Option>
+                <Option value= "momentUp"   >MOMENT UP   for UU mSecs Digital Write</Option>
+                <Option value= "momentDown" >MOMENT down for dd mSecs Digital Write</Option>
+                <Option value= "rampDown"   >Ramp   down in  dd mSecs  Analog Write</Option>
+                <Option value= "rampUp"     >Ramp   UP   in  UU mSecs  Analog Write</Option>
+                <Option value= "rampUPDown" >continuous Ramp  UP/down in  UU/dd mSecs  Analog Write</Option>
+                <Option value= "pulseUp"    >continuous PULSE UP/down for UU/dd mSecs, start with UP  Digital Write</Option>
+                <Option value= "pulseDown"  >continuous PULSE down/UP for dd/UU mSecs, start with down Digital Write</Option>
+                <Option value= "config"     >get curent value of digital pin</Option>
+                <Option value= "CountReset" >reset  digital count </Option>
+            </List>
+            <Label>which command  </Label>
+        </Field>
+
+        <Field id="lowHIGH"	visibleBindingId="CMD"	visibleBindingValue="ONoff"	type="menu" default="0"	 >
+            <List>
+                <Option value= "0">LOW  = 0 </Option>
+                <Option value= "1">HIGH = 1</Option>
+            </List>
+            <Label>set output of pin/variable  to  </Label>
+        </Field>
+        
+        <Field id="aValue"	visibleBindingId="CMD"	visibleBindingValue="analogWrite"  type="textfield" default="0"	>
+            <Label>set output Value of pin to 0...,255 or Variable to Integer/FP/text </Label>
+        </Field>
+
+        <Field id="msecUP"	visibleBindingId="CMD"	visibleBindingValue="rampUp,momentUp,pulseUp,pulseDown,rampUPDown"  type="textfield" default="0"	>
+            <Label>mSecs up </Label>
+        </Field>
+
+        <Field id="msecDOWN" visibleBindingId="CMD"	visibleBindingValue="rampDown,momentDown,pulseUp,pulseDown,rampUPDown"  type="textfield" default="0"	>
+            <Label>mSecs down </Label>
+        </Field>
+
+        <Field id="minValue" visibleBindingId="CMD"	visibleBindingValue="rampDown,rampUp,rampUPDown"  type="textfield" default="0"	>
+            <Label>minValue</Label>
+        </Field>
+        <Field id="maxValue" visibleBindingId="CMD"	visibleBindingValue="rampDown,rampUp,rampUPDown"  type="textfield" default="255"	>
+            <Label>maxValue</Label>
+        </Field>
+        
+        <Field id="sendORset"	type="menu" default="send"	 >
+            <List>
+                <Option value= "setANDsend">set AND send pin </Option>
+                <Option value= "setOnly">set pin only</Option>
+            </List>
+            <Label>set output of pin/variable  to  </Label>
+        </Field>
+
+        
+        <Field  id="execsetPin" type="button"	>
+            <Label> ....after selection click</Label><Title>EXECUTE</Title> <CallbackMethod>setPinCALLBACKmenu</CallbackMethod>
+        </Field>
+
+        </ConfigUI>
+    </MenuItem>
+
+
+    <MenuItem id="sendPins">
+        <Name>Send several pins at once</Name>
+        <ConfigUI>
+        <Field id="device"	type="menu" default="0" >
+            <Label>pick device </Label>
+                <List class="self" filter="" method="filterDevsArduino" dynamicReload="false"/>
+        </Field>
+
+         <Field id="pinsToBeSend"	 type="textfield" default="S1"	>
+            <Label>pins to be send e.g. S1,D0,S5,D7:</Label>
+        </Field>
+        <Field  id="execsendPins" type="button"	>
+            <Label> ....after selection click</Label><Title>EXECUTE</Title> <CallbackMethod>sendPinsCALLBACKmenu</CallbackMethod>
+        </Field>
+
+        </ConfigUI>
+
+    </MenuItem>
+
+
+    <MenuItem id="program">
+        <Name>Set Pin Modes (input/output)</Name>
+        <ConfigUI>
+        <Field id="device"		type="menu" default="0" >
+            <Label>pick device </Label>
+                <List class="self" filter="" method="filterDevsArduino" dynamicReload="false"/>
+        </Field>
+        
+        <Field id="Pin"	type="menu" default="D1"	>
+            <List>
+                <Option value= "S0">S0 STRING Variable</Option>
+                <Option value= "S1">S1 STRING Variable</Option>
+                <Option value= "S2">S2 STRING Variable</Option>
+                <Option value= "S3">S3 STRING Variable</Option>
+                <Option value= "S4">S4 STRING Variable</Option>
+                <Option value= "S5">S5 STRING Variable</Option>
+                <Option value= "S6">S6 STRING Variable</Option>
+                <Option value= "S7">S7 STRING Variable</Option>
+                <Option value= "S8">S8 STRING Variable</Option>
+                <Option value= "S9">S9 STRING Variable</Option>
+
+
+                <Option value= "D0">D0 ARDUINO only use if enabled in arduino sketch + ESP16 </Option>
+                <Option value= "D1">D1 ARDUINO only use if enabled in arduino sketch </Option>
+                <Option value= "D2">D2 ARDUINO + ESP16 + ESP1</Option>
+                <Option value= "D3">D3 ARDUINO </Option>
+                <Option value= "D4">D4 ARDUINO + ESP16</Option>
+                <Option value= "D5">D5 ARDUINO + ESP16</Option>
+                <Option value= "D6">D6 ARDUINO </Option>
+                <Option value= "D7">D7 MKR </Option>
+                <Option value= "D8">D8 ARDUINO </Option>
+                <Option value= "D9">D9 ARDUINO </Option>
+                <Option value= "D10">D10 MKR-SPI  </Option>
+                <Option value= "D11">D11 MKR-SPI </Option>
+                <Option value= "D12">D12 ESP16  </Option>
+                <Option value= "D13">D13 ESP16 +MKR-RX </Option>
+                <Option value= "D14">D14 ESP16 +MEGA +MKR-TX</Option>
+                <Option value= "D15">D15 ESP16 +MEGA +MKR-DAC </Option>
+                <Option value= "D17">D17 MEGA </Option>
+                <Option value= "D18">D18 MEGA </Option>
+                <Option value= "D19">D19 ... </Option>
+
+
+
+                <Option value= "D20">D20 </Option>
+                <Option value= "D21">D21 </Option>
+                <Option value= "D22">D22 </Option>
+                <Option value= "D23">D23 </Option>
+                <Option value= "D24">D24 </Option>
+                <Option value= "D25">D25 </Option>
+                <Option value= "D26">D26 </Option>
+                <Option value= "D27">D27 </Option>
+                <Option value= "D28">D28 </Option>
+                <Option value= "D29">D29 </Option>
+                
+                <Option value= "D30">D30 </Option>
+                <Option value= "D31">D31 </Option>
+                <Option value= "D32">D32 </Option>
+                <Option value= "D33">D33 </Option>
+                <Option value= "D34">D34 </Option>
+                <Option value= "D35">D35 </Option>
+                <Option value= "D36">D36 </Option>
+                <Option value= "D37">D37 </Option>
+                <Option value= "D38">D38 </Option>
+                <Option value= "D39">D39 </Option>
+                
+                <Option value= "D40">D40 </Option>
+                <Option value= "D41">D41 </Option>
+                <Option value= "D42">D42 </Option>
+                <Option value= "D43">D43 </Option>
+                <Option value= "D44">D44 </Option>
+                <Option value= "D45">D45 </Option>
+                <Option value= "D46">D46 </Option>
+                <Option value= "D47">D47 </Option>
+                <Option value= "D48">D48 </Option>
+                <Option value= "D49">D49 </Option>
+            </List>
+            <Label>pick pin </Label>
+        </Field>
+
+        <Field id="IO"		type="menu" default="OFF"	>
+            <List>
+                <Option value= "I">INPUT </Option>
+                <Option value= "O">OUTPUT</Option>
+                <Option value= "U">INPUT with internal pull up resistor enabled</Option>
+                <Option value= "z"  >Count INPUT 0to1</Option>
+                <Option value= "Z"  >Count INPUT 0to1 with internal pull up resistor enabled</Option>
+                <Option value= "y"  >Count INPUT 1to0</Option>
+                <Option value= "Y"  >Count INPUT 1to0 with internal pull up resistor enabled</Option>
+                <Option value= "OFF">OFF</Option>
+            </List>
+            <Label>set pin  to Mode:</Label></Field>
+        <Field  id="execpgmPin" type="button"	>
+            <Label> ....after selection click</Label><Title>EXECUTE</Title> <CallbackMethod>programCALLBACKmenu</CallbackMethod>
+        </Field>
+        </ConfigUI>
+
+    </MenuItem>
+
+
+</MenuItems>

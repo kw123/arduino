@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<PluginConfig>
+
+    <Field id="infoLabel" type="label">
+        <Label>Arduino connect app for Indigo           Developed by Karl Wachs</Label>
+    </Field>
+    <Field id="simpleSeparator11" type="separator"/>
+
+
+
+<Field id="simpleSeparator31" type="separator"/>
+
+<Field id="debugLevel"  type="menu" defaultValue="0" tooltip="pick which debug level / area " >
+    <List>
+        <Option value="0"  >no debug logging</Option>
+        <Option value="1"  >debug LOGIC </Option>
+        <Option value="2"  >debug HTTP </Option>
+        <Option value="3"  >debug LOGIC and HTTP </Option>
+        <Option value="255" >debug all</Option>
+    </List>
+    <Label>debug:</Label> </Field>
+
+
+</PluginConfig>
