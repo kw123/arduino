@@ -32,7 +32,7 @@ class Plugin(indigo.PluginBase):
     def __init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs):
         indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
         
-		self.pluginVersion		= pluginVersion
+        self.pluginVersion		= pluginVersion
         self.pathToPlugin       =os.getcwd()+"/"
         ## = /Library/Application Support/Perceptive Automation/Indigo 6/Plugins/piBeacon.indigoPlugin/Contents/Server Plugin
         p=max(0,self.pathToPlugin.find("/plugins/"))+1
