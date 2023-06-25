@@ -1,2 +1,0 @@
-# arduino
-arduino indigo plugin
