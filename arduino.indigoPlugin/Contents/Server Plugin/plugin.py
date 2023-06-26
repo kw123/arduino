@@ -99,7 +99,7 @@ class Plugin(indigo.PluginBase):
 			pass
 
 
-		self.myLog(255,u"ARDUINO --V "+self.pluginVersion+u"   initializing ")
+		self.myLog(255,"ARDUINO --V "+self.pluginVersion+"   initializing ")
 
 		self.startDEVS=True
 
@@ -121,7 +121,7 @@ class Plugin(indigo.PluginBase):
 			devType = dev.deviceTypeId
 			devS= str(dev.id)
 
-			self.myLog(1,u"deviceStartComm  for " +dev.name)
+			self.myLog(1,"deviceStartComm  for " +dev.name)
 
 			#make a copy
 			self.lastUpdate[devS]					= 0
@@ -176,7 +176,7 @@ class Plugin(indigo.PluginBase):
 			dev.description="updtInt= "+props["UpdateFrequency"]+"[secs]"
 			dev.replaceOnServer()
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 	
 		return
 	
@@ -217,7 +217,7 @@ class Plugin(indigo.PluginBase):
 ####-----------------  set the geneeral config parameters---------
 	def validatePrefsConfigUi(self, valuesDict):
 
-		self.debugLevel			= int(valuesDict[u"debugLevel"])
+		self.debugLevel			= int(valuesDict["debugLevel"])
 
 		return True, valuesDict
 
@@ -290,7 +290,7 @@ class Plugin(indigo.PluginBase):
 		self.startDEVS=False
 
 
-		self.myLog(255, u"init done")
+		self.myLog(255, "init done")
 
 		try:
 			while True:
@@ -387,9 +387,9 @@ class Plugin(indigo.PluginBase):
 			
 			
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		
-		self.myLog(255, u" stopping plugin " )
+		self.myLog(255, " stopping plugin " )
 
 		return
 
@@ -414,9 +414,9 @@ class Plugin(indigo.PluginBase):
 				pass
 		except  Exception as e:
 				if len(str(e))> 5:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
-					self.myLog(255, u"dev " + dev.name )
-					self.myLog(255, u"out " + str(out) )
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
+					self.myLog(255, "dev " + dev.name )
+					self.myLog(255, "out " + str(out) )
 		
 		return pinValues
 
@@ -454,7 +454,7 @@ class Plugin(indigo.PluginBase):
 				out=""
 				for Pin in props:
 					if "Pin_" not in Pin: continue
-					## self.myLog(255, u"Pin:" +str(Pin))
+					## self.myLog(255, "Pin:" +str(Pin))
 					if Pin.find("A") >-1: continue
 					pin=Pin.strip("Pin_")
 					if Pin.find("D") >-1:
@@ -492,7 +492,7 @@ class Plugin(indigo.PluginBase):
 				pass
 
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		return output
 
 
@@ -508,7 +508,7 @@ class Plugin(indigo.PluginBase):
 			out=""
 			pinsToUpdate =pinsToUpdate.upper()
 			for Pin in props:
-				##self.myLog(255, u" props "+ str(Pin))
+				##self.myLog(255, " props "+ str(Pin))
 				if "Pin_" not in Pin: continue
 				pin=Pin.strip("Pin_")
 				if pin in doNotUsePin[dev.deviceTypeId]: continue
@@ -522,7 +522,7 @@ class Plugin(indigo.PluginBase):
 					else:
 						cmdValue= state.split(":")
 					try:
-						##self.myLog(255, u" cmdValue " + str(cmdValue))
+						##self.myLog(255, " cmdValue " + str(cmdValue))
 
 						if len(cmdValue)>1:
 							## to not write onetime signals to pins as they are only one time events , but write final state
@@ -540,7 +540,8 @@ class Plugin(indigo.PluginBase):
 								cmdValue[1] = cmdValue.split(",")[2]
 							out+=mapToArduino[cmdValue[0].lower()]+':'+pin+'='+cmdValue[1]+'&'
 					except Exception as e :
-						self.myLog(255, u" error updating Pin state cmdValue " + Pin + "  " + str(state) + "  " + str(cmdValue) + " l '%s',  e:'%s'" % (sys.exc_traceback.tb_lineno, e))
+						self.myLog(255, " error updating Pin state cmdValue {} {} {} ".format(Pin, state, cmdValue))
+						self.logger.error("", exc_info=True)
 
 				if props[Pin].upper() == "Y" or props[Pin].upper() == "Z":
 					   out += mapToArduino["CountReset".lower()]+":" + pin + '&'
@@ -551,7 +552,7 @@ class Plugin(indigo.PluginBase):
 				output = self.sendMsgToArduino(out+'&',dev.id)
 		
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		return output
 
 	def filterDevsSainsmart(self, valuesDict=None, filter="", typeId="", devId=""):
@@ -704,7 +705,7 @@ class Plugin(indigo.PluginBase):
 					self.myLog(255, " bad device  ID / name " + str(aprops1))
 					return {}
 
-			self.myLog(2, u"setPin  data: " +dev.name+ "  deviceTypeId:"+ dev.deviceTypeId+"  "+ str(devTypes))
+			self.myLog(2, "setPin  data: " +dev.name+ "  deviceTypeId:"+ dev.deviceTypeId+"  "+ str(devTypes))
 
 			
 			if devTypes[dev.deviceTypeId] =="arduino":
@@ -714,11 +715,11 @@ class Plugin(indigo.PluginBase):
 				output = self.setPinSainsmart(deviceId, dev, aprops ,updateIndigo=True)
 
 			else:
-				self.myLog(255, u"setPin bad devType" +dev.deviceTypeId+ "  "+ str(devTypes))
+				self.myLog(255, "setPin bad devType" +dev.deviceTypeId+ "  "+ str(devTypes))
 			
 			
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		self.executeUpdateStatesList()
 		return output
 
@@ -737,7 +738,7 @@ class Plugin(indigo.PluginBase):
 			if "CMD".lower() in aprops:
 				CMD = aprops["CMD".lower()]
 			if CMD =="":
-				self.myLog(2,u" error in action command, CMD missing: "+str(aprops) )
+				self.myLog(2," error in action command, CMD missing: "+str(aprops) )
 				return output
 
 			if "lowHIGH".lower() in aprops:
@@ -813,66 +814,66 @@ class Plugin(indigo.PluginBase):
 
 			elif CMD.lower() =="ONoff".lower():
 				if lowHIGH=="":
-					self.myLog(1,u" error in action command, lowHIGH missing: "+str(aprops) )
+					self.myLog(1," error in action command, lowHIGH missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+lowHIGH
 				cms+=lowHIGH
 
 			elif CMD.lower() =="analogWrite".lower():
 				if aValue=="":
-					self.myLog(1,u" error in action command, aValue missing: "+str(aprops))
+					self.myLog(1," error in action command, aValue missing: "+str(aprops))
 					return output
 				cmd+=pin+	'='+str(aValue)
 				cms+=aValue
 
 			elif CMD.lower() =="momentUp".lower():
 				if msecUP=="" :
-					self.myLog(1,u" error in action command, msecUP missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecUP missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecUP
 				cms+=msecUP
 
 			elif CMD.lower() =="momentDown".lower():
 				if msecDOWN =="":
-					self.myLog(1,u" error in action command, msecDOWN missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecDOWN missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecDOWN
 				cms+=msecDOWN
 
 			elif CMD.lower() =="pulseUp".lower():
 				if msecUP=="" or msecDOWN =="":
-					self.myLog(1,u" error in action command, msecUP/DOWN missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecUP/DOWN missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecUP+','+msecDOWN
 				cms+=msecUP+','+msecDOWN
 
 			elif CMD.lower() =="pulseDown".lower():
 				if msecUP=="" or msecDOWN =="":
-					self.myLog(1,u" error in action command, msecUP/DOWN missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecUP/DOWN missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecUP+','+msecDOWN
 				cms+=msecUP+','+msecDOWN
 	
 			elif CMD.lower() =="rampUp".lower():
 				if msecUP=="":
-					self.myLog(1,u" error in action command, msecUP missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecUP missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecUP+","+minValue+","+maxValue
 				cms+=msecUP+","+minValue+","+maxValue
 
 			elif CMD.lower() =="rampDown".lower():
 				if msecDOWN=="":
-					self.myLog(1,u" error in action command, msecDown missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecDown missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecDOWN+","+minValue+","+maxValue
 				cms+=msecDOWN+","+minValue+","+maxValue
 
 			elif CMD.lower() =="rampUPDown".lower():
 				if msecDOWN=="":
-					self.myLog(1,u" error in action command, msecDown missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecDown missing: "+str(aprops) )
 					return output
 				if msecUP=="":
-					self.myLog(1,u" error in action command, msecUp missing: "+str(aprops) )
+					self.myLog(1," error in action command, msecUp missing: "+str(aprops) )
 					return output
 				cmd+=pin+	'='+msecUP+','+msecDOWN+","+minValue+","+maxValue
 				cms+=msecUP+','+msecDOWN+","+minValue+","+maxValue
@@ -883,7 +884,7 @@ class Plugin(indigo.PluginBase):
 
 
 			else:
-				self.myLog(1,u" error in action command, CMD "+CMD+" mispelled: "+str(aprops) )
+				self.myLog(1," error in action command, CMD "+CMD+" mispelled: "+str(aprops) )
 				return output
 
 
@@ -921,7 +922,7 @@ class Plugin(indigo.PluginBase):
 
 			return output
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 
 
 ####----------------- ACTIONs  ---------
@@ -970,7 +971,7 @@ class Plugin(indigo.PluginBase):
 
 			return output
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		
 
 ####----------------- send the message to the arduino @ ipnumber  ---------
@@ -1010,7 +1011,7 @@ class Plugin(indigo.PluginBase):
 					url='http://'+IPNumber+'/?'+out+'?'
 					self.myLog(2,url)
 					try:
-						ret= requests.get(url, timeout=8).read()
+						ret= requests.get(url, timeout=8).content
 						output = self.parseFromArduino(ret,output)
 						self.myLog(2,"http round trip : "+str(time.time()-start)+"[sec]")
 						
@@ -1026,14 +1027,14 @@ class Plugin(indigo.PluginBase):
 					except Exception as e:
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
-								self.myLog(2,u"connection to arduino >"+dev.name+"< timed out ")
+								self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
 							else:
-								self.myLog(255, u"connection to arduino >"+dev.name+"< has error='%s'" % (e) )
+								self.myLog(255, "connection to arduino >"+dev.name+"< has error='%s'" % (e) )
 						self.errorCount[devS] +=1
 						Online="Offline"
 				except  Exception as e:
 					if self.errorCount[devS] < 5:
-						if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+						if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 					output["Status"]="Offline"
 					Online="Offline"
 					self.errorCount[devS] +=1
@@ -1047,7 +1048,7 @@ class Plugin(indigo.PluginBase):
 				self.addToStatesUpdateList(str(deviceId),"Status",Online)
 			return output
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 
 
 
@@ -1073,20 +1074,20 @@ class Plugin(indigo.PluginBase):
 			
 			for p1 in p:  ## looks like:  rd:A1=12345&  or rd:S1=aklsdflksadf;=.,45=&   NO & in the middle !!
 				pK= p1.find(":") ## find FIRST occurence allow for  : in string
-				#self.myLog(2, u"parse 1 "+ str(pK)+ " " + str(p1) )
+				#self.myLog(2, "parse 1 "+ str(pK)+ " " + str(p1) )
 				if pK >0:
 					p2 = [p1[0:pK],p1[pK+1:len(p1)]] # split command and rest
-					#self.myLog(2, u"parse p2 "+ str(p2))
+					#self.myLog(2, "parse p2 "+ str(p2))
 					try:
 						cmd=mapFromArduino[p2[0]]
-						#self.myLog(2, u"parse cmd "+ str(cmd))
+						#self.myLog(2, "parse cmd "+ str(cmd))
 						try:
 							pE= p2[1].find("=")  ## find FIRST occurence allow for  = in string
-							#self.myLog(2, u"parse pE "+ str(pE))
+							#self.myLog(2, "parse pE "+ str(pE))
 							if pE> 0:
 								p3=[p2[1][0:pE],p2[1][pE+1:len(p2[1])]]  # split pin# and values
 								pin=p3[0]
-								#self.myLog(2, u"parse pE>0 "+ str(pin)+" "+  str(p3))
+								#self.myLog(2, "parse pE>0 "+ str(pin)+" "+  str(p3))
 								try:
 									values=p3[1]
 								except:
@@ -1106,7 +1107,7 @@ class Plugin(indigo.PluginBase):
 				
 			return out
 #		except:
-#			self.myLog(2, u"parse error "+ str(inp) )
+#			self.myLog(2, "parse error "+ str(inp) )
 #			return out
 
 #>>rd:A0=207&rd:A1=261&rd:A2=243&rd:A3=262&rd:A4=268&rd:A5=238&rd:D0=notUseabl
@@ -1118,19 +1119,19 @@ class Plugin(indigo.PluginBase):
 ####----------------- ACTIONs  ---------
 	def setPinSainsmart(self, deviceId, dev, aprops ,updateIndigo=True):
 		try:
-			self.myLog(2,u"setPinSainsmart: "+dev.name+"  "+ str(aprops))
+			self.myLog(2,"setPinSainsmart: "+dev.name+"  "+ str(aprops))
 			output ={"Status":""}
 			CMD=""
 			if "lowhigh" in aprops:
-				CMD = aprops[u"lowhigh"]
+				CMD = aprops["lowhigh"]
 			if CMD =="":
-				self.myLog(255,u" error in action command, CMD missing: "+str(aprops) )
+				self.myLog(255," error in action command, CMD missing: "+str(aprops) )
 				return output
 
 			output= self.sendMsgToSainsmart( CMD,deviceId)
 
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		return output
 
 
@@ -1160,7 +1161,7 @@ class Plugin(indigo.PluginBase):
 			Onlinechanged    = False
 			props            = dev.pluginProps
 			relay            = dev.pluginProps["relay"].split(",")
-			self.myLog(2,u"dev, relay:"+dev.name+"  OnOrOff:"+OnOrOff+"  relay:"+str(relay))
+			self.myLog(2,"dev, relay:"+dev.name+"  OnOrOff:"+OnOrOff+"  relay:"+str(relay))
 			# relay is up,down,RELAY-xx,on,off,status-page
 			relayName        = relay[2]
 			page             = relay[5]
@@ -1185,7 +1186,7 @@ class Plugin(indigo.PluginBase):
 				cmd          = relay[4]
 				ONoff        = relay[1]
 			else:
-				self.myLog(255,u"dev, relay:"+dev.name+"  OnOrOff wrong:"+ OnOrOff)
+				self.myLog(255,"dev, relay:"+dev.name+"  OnOrOff wrong:"+ OnOrOff)
 				return output
 
 
@@ -1197,13 +1198,13 @@ class Plugin(indigo.PluginBase):
 					url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+page
 					#self.myLog(255,"Sainsmart page     "+ url)
 					try:
-						ret= requests.get(url, timeout=8).read()
+						ret= requests.get(url, timeout=8).content
 						output = self.parseFromSainsmart(ret,relayName)
 						#self.myLog(255,"http round trip : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
 						if output["relay"] =="":  # do it again, have to be on the right page
 							url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+page
 							self.myLog(2,"Sainsmart redo page   "+ url)
-							ret= requests.get(url, timeout=8).read()
+							ret= requests.get(url, timeout=8).content
 							output = self.parseFromSainsmart(ret,relayName)
 							#self.myLog(255,"http round trip : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
 						
@@ -1215,7 +1216,7 @@ class Plugin(indigo.PluginBase):
 							url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+cmd
 							self.myLog(2,url)
 							try:
-								ret= requests.get(url, timeout=8).read()
+								ret= requests.get(url, timeout=8).content
 								output = self.parseFromSainsmart(ret,relayName)
 								Online = output["Status"]
 								#self.myLog(255,"http round trip set : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
@@ -1223,9 +1224,10 @@ class Plugin(indigo.PluginBase):
 							except Exception as e:
 								if self.errorCount[devS] < 5:
 									if str(e).find("timed out" ) >-1:
-										self.myLog(2,u"connection to arduino >"+dev.name+"< timed out ")
+										self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
 									else:
-										self.myLog(255, u"connection to arduino >"+dev.name+"< has error='%s'" % (e) )
+										self.myLog(255, "connection to arduino >"+dev.name)
+										self.logger.error("", exc_info=True)
 								self.errorCount[devS] +=1
  
 
@@ -1233,15 +1235,16 @@ class Plugin(indigo.PluginBase):
 					except Exception as e:
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
-								self.myLog(2,u"connection to arduino >"+dev.name+"< timed out ")
+								self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
 							else:
-								self.myLog(255, u"connection to arduino >"+dev.name+"< has error='%s'" % (e) )
+								self.myLog(255, "connection to arduino >"+dev.name)
+								self.logger.error("", exc_info=True)
 						self.errorCount[devS] +=1
 						Online="Offline"
 
 				except  Exception as e:
 					if self.errorCount[devS] < 5:
-						if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+						if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 					output["Status"]="Offline"
 					Online="Offline"
 					self.errorCount[devS] +=1
@@ -1267,7 +1270,7 @@ class Plugin(indigo.PluginBase):
 						self.addToStatesUpdateList(str(deviceId),"onOffState",False)
 		except  Exception as e:
 				#if len(e)>1:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 		return output
 
 
@@ -1291,7 +1294,7 @@ class Plugin(indigo.PluginBase):
 				
 				out["Status"]   = "Online, Configured"
 		except  Exception as e:
-			if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+			if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 			out["Status"]    = "Online, Not Configured"
 		return out
 
@@ -1368,4 +1371,4 @@ class Plugin(indigo.PluginBase):
 			if  newStates != "":  
 				return newStates              
 		except  Exception as e:
-					if "{}".format(e).find("None") == -1: self.myLog(255,"{}; line#,Module,Statement:{}".format(e, traceback.extract_tb(sys.exc_info()[2])[-1][1:]))
+					if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)

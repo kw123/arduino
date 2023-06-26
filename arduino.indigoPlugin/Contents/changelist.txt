@@ -1,8 +1,13 @@
-dded features / changes in v2022.9.11 @ 2023-06-25
+added features / changes in v2022.9.12 @ 2023-06-26
+===================================================
+fixed some execption handling and read http response 
+
+
+added features / changes in v2022.9.11 @ 2023-06-25
 ===================================================
 
 1. converted code to py3
-   repalced urllib with requests, changed exceptions
+   replaced urllib with requests, changed exceptions
 
 it compiles and runs, but not tested.
 
