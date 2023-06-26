@@ -1,3 +1,9 @@
+added features / changes in v2022.9.13 @ 2023-06-26
+===================================================
+converted bytes to strings 
+
+
+
 added features / changes in v2022.9.12 @ 2023-06-26
 ===================================================
 fixed some execption handling and read http response 

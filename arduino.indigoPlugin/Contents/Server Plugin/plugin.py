@@ -499,22 +499,22 @@ class Plugin(indigo.PluginBase):
 
 
 ####-----------------  set arduino to correct I/O config for each pin---------
-	def setArduinoStatesValues(self,deviceId,pinsToUpdate="ALL"):
+	def setArduinoStatesValues(self,deviceId, pinsToUpdate="ALL"):
 		# program arduino at startup to read / write (I/O)
 		output={"Status":"Offline"}
 		try:
 			dev= indigo.devices[deviceId]
 			props=dev.pluginProps
 			out=""
-			pinsToUpdate =pinsToUpdate.upper()
+			pinsToUpdate = pinsToUpdate.upper()
 			for Pin in props:
 				##self.myLog(255, " props "+ str(Pin))
 				if "Pin_" not in Pin: continue
-				pin=Pin.strip("Pin_")
+				pin = str(Pin).strip("Pin_")
 				if pin in doNotUsePin[dev.deviceTypeId]: continue
 				if Pin not in dev.states: continue
 				if pinsToUpdate != "ALL" and pin not in pinsToUpdate: continue
-				state= dev.states[Pin]
+				state= str(dev.states[Pin])
 				if props[Pin] =="O":
 					if state =="": continue  # state not set yet, nothing to set
 					if state =="0" or state=="1":
@@ -534,10 +534,10 @@ class Plugin(indigo.PluginBase):
 								cmdValue[1] = "1"
 							elif cmdValue[0].find("rampDown") > -1:
 								cmdValue[0] = "analogWrite"
-								cmdValue[1] = cmdValue.split(",")[1]
+								cmdValue[1] = cmdValue[1].split(",")[1]
 							elif cmdValue[0].find("rampUp") > -1:
 								cmdValue[0] = "analogWrite"
-								cmdValue[1] = cmdValue.split(",")[2]
+								cmdValue[1] = cmdValue[1].split(",")[2]
 							out+=mapToArduino[cmdValue[0].lower()]+':'+pin+'='+cmdValue[1]+'&'
 					except Exception as e :
 						self.myLog(255, " error updating Pin state cmdValue {} {} {} ".format(Pin, state, cmdValue))
@@ -976,7 +976,8 @@ class Plugin(indigo.PluginBase):
 
 ####----------------- send the message to the arduino @ ipnumber  ---------
 	def sendMsgToArduino(self, out,deviceId):
-		devS= str(deviceId)
+		devS = str(deviceId)
+		out = str(out)
 		try:
 			dev=indigo.devices[deviceId]
 			try:
@@ -988,22 +989,22 @@ class Plugin(indigo.PluginBase):
 			output["Status"]="Offline"
 			Online="OffLine"
 			Onlinechanged = False
-			IPNumber = dev.pluginProps["IPNumber"]
+			IPNumber = str(dev.pluginProps["IPNumber"])
 			props = dev.pluginProps
-			out=out.strip("&")
+			out = out.strip("&")
 			count = out.count('&') +1############# split into chuncks < xx,  for slow connections, small memeory on arduino ie used forf other things.
 									 ############# ==> can reduce the input buffer buf1..  it is 7 bytes / pin and read for 16 pins = 112ytes, for 5 it would be 35bytes
 			nPacks = int(count //self.maxNofpinsPerMessage[devS])
-			items= out.split("&")
+			items = out.split("&")
 			for i in range(0,nPacks+1):
 				out =""
 				j0= self.maxNofpinsPerMessage[devS]*i
 				j1= self.maxNofpinsPerMessage[devS]*(i+1)
 				for j in range( j0, min(j1,count)  ):
-					out+= items[j]+'&'
-				self.myLog(2, "i, out  "+ str(i)+"  " + str(items))
-				if out=="": continue
-				while self.lasthttp +self.minWaitbetweenhttp > time.time():
+					out+= items[j] +'&'
+				self.myLog(2, "i, out  {}  {}".format(i, items))
+				if out == "": continue
+				while self.lasthttp + self.minWaitbetweenhttp > time.time():
 					self.sleep(0.1)
 				self.lasthttp = time.time()
 				try:
@@ -1011,15 +1012,15 @@ class Plugin(indigo.PluginBase):
 					url='http://'+IPNumber+'/?'+out+'?'
 					self.myLog(2,url)
 					try:
-						ret= requests.get(url, timeout=8).content
+						ret= str(requests.get(url, timeout=8).content)
 						output = self.parseFromArduino(ret,output)
-						self.myLog(2,"http round trip : "+str(time.time()-start)+"[sec]")
+						self.myLog(2,"http round trip : {}[sec]".format(time.time()-start))
 						
 						Online ="Online, Configured"
 						if output["Status"]=="Online, Not Configured":
 							Online="Online, Not Configured"
 							self.errorCount[devS] +=1
-							self.myLog(2,"not configured, break loop "+ str(output))
+							self.myLog(2,"not configured, break loop {}".format(output))
 							break
 						else:
 							self.errorCount[devS]=0
@@ -1027,9 +1028,10 @@ class Plugin(indigo.PluginBase):
 					except Exception as e:
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
-								self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
+								self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
 							else:
-								self.myLog(255, "connection to arduino >"+dev.name+"< has error='%s'" % (e) )
+								self.myLog(255, "connection to arduino >{}".format(dev.name) )
+								self.logger.error("", exc_info=True)
 						self.errorCount[devS] +=1
 						Online="Offline"
 				except  Exception as e:
@@ -1053,11 +1055,11 @@ class Plugin(indigo.PluginBase):
 
 
 ####----------------- parse and unparse arduino com ---------
-	def parseFromArduino(self,inp,output):
+	def parseFromArduino(self, inp, utput):
 #		try:
 			##			inp=">>write:D0=316&read:A1=306&read:D0=1&"
 			##			out={"D0":{"cmd":wr","values":"316"},"A1":{"cmd":rd","values":"316"},"D0":{"cmd":rd","values":"1"}}
-			self.myLog(2,"msg from arduino: "+ inp)
+			self.myLog(2,"msg from arduino: {}".format(inp))
 			out= output
 			out["Status"]="Online,No Data"
 			if len(inp)<3: return out
@@ -1119,13 +1121,13 @@ class Plugin(indigo.PluginBase):
 ####----------------- ACTIONs  ---------
 	def setPinSainsmart(self, deviceId, dev, aprops ,updateIndigo=True):
 		try:
-			self.myLog(2,"setPinSainsmart: "+dev.name+"  "+ str(aprops))
+			self.myLog(2,"setPinSainsmart: {} {}".format(dev.name, aprops))
 			output ={"Status":""}
 			CMD=""
 			if "lowhigh" in aprops:
 				CMD = aprops["lowhigh"]
 			if CMD =="":
-				self.myLog(255," error in action command, CMD missing: "+str(aprops) )
+				self.myLog(255," error in action command, CMD missing: {}".format(aprops) )
 				return output
 
 			output= self.sendMsgToSainsmart( CMD,deviceId)
@@ -1161,10 +1163,10 @@ class Plugin(indigo.PluginBase):
 			Onlinechanged    = False
 			props            = dev.pluginProps
 			relay            = dev.pluginProps["relay"].split(",")
-			self.myLog(2,"dev, relay:"+dev.name+"  OnOrOff:"+OnOrOff+"  relay:"+str(relay))
+			self.myLog(2,"dev, relay:{}  OnOrOff:{}  relay:{}".format(dev.name, OnOrOff, relay))
 			# relay is up,down,RELAY-xx,on,off,status-page
-			relayName        = relay[2]
-			page             = relay[5]
+			relayName        = str(relay[2])
+			page             = str(relay[5])
 
 			if OnOrOff.lower() == "status": 
 				if dev.states["onOffState"] =="ON":
@@ -1186,7 +1188,7 @@ class Plugin(indigo.PluginBase):
 				cmd          = relay[4]
 				ONoff        = relay[1]
 			else:
-				self.myLog(255,"dev, relay:"+dev.name+"  OnOrOff wrong:"+ OnOrOff)
+				self.myLog(255,"dev, relay:{} OnOrOff wrong:{}".format(dev.name, OnOrOff))
 				return output
 
 
@@ -1195,16 +1197,16 @@ class Plugin(indigo.PluginBase):
 				self.lasthttp = time.time()
 				try:
 					start= time.time()
-					url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+page
+					url='http://'+str(dev.pluginProps["IPNumber"])+'/'+str(dev.pluginProps["portNumber"])+"/"+page
 					#self.myLog(255,"Sainsmart page     "+ url)
 					try:
-						ret= requests.get(url, timeout=8).content
-						output = self.parseFromSainsmart(ret,relayName)
+						ret= str(requests.get(url, timeout=8).content)
+						output = str(self.parseFromSainsmart(ret,relayName))
 						#self.myLog(255,"http round trip : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
-						if output["relay"] =="":  # do it again, have to be on the right page
-							url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+page
+						if output["relay"] == "":  # do it again, have to be on the right page
+							url='http://'+str(dev.pluginProps["IPNumber"])+'/'+str(dev.pluginProps["portNumber"])+"/"+page
 							self.myLog(2,"Sainsmart redo page   "+ url)
-							ret= requests.get(url, timeout=8).content
+							ret= str(requests.get(url, timeout=8).content)
 							output = self.parseFromSainsmart(ret,relayName)
 							#self.myLog(255,"http round trip : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
 						
@@ -1213,10 +1215,10 @@ class Plugin(indigo.PluginBase):
 						self.lasthttp = time.time()
 						if output["relay"] != ONoff and  ONoff !="":
 							start= time.time()
-							url='http://'+dev.pluginProps["IPNumber"]+'/'+dev.pluginProps["portNumber"]+"/"+cmd
+							url='http://'+str(dev.pluginProps["IPNumber"])+'/'+str(ev.pluginProps["portNumber"])+"/"+cmd
 							self.myLog(2,url)
 							try:
-								ret= requests.get(url, timeout=8).content
+								ret= str(requests.get(url, timeout=8).content)
 								output = self.parseFromSainsmart(ret,relayName)
 								Online = output["Status"]
 								#self.myLog(255,"http round trip set : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
@@ -1224,9 +1226,9 @@ class Plugin(indigo.PluginBase):
 							except Exception as e:
 								if self.errorCount[devS] < 5:
 									if str(e).find("timed out" ) >-1:
-										self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
+										self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
 									else:
-										self.myLog(255, "connection to arduino >"+dev.name)
+										self.myLog(255, "connection to arduino >{}".format(dev.name))
 										self.logger.error("", exc_info=True)
 								self.errorCount[devS] +=1
  
@@ -1235,9 +1237,9 @@ class Plugin(indigo.PluginBase):
 					except Exception as e:
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
-								self.myLog(2,"connection to arduino >"+dev.name+"< timed out ")
+								self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
 							else:
-								self.myLog(255, "connection to arduino >"+dev.name)
+								self.myLog(255, "connection to arduino >{}".format(dev.name))
 								self.logger.error("", exc_info=True)
 						self.errorCount[devS] +=1
 						Online="Offline"
