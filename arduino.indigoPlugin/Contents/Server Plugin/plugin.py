@@ -1055,14 +1055,14 @@ class Plugin(indigo.PluginBase):
 
 
 ####----------------- parse and unparse arduino com ---------
-	def parseFromArduino(self, inp, utput):
+	def parseFromArduino(self, inp, output):
 #		try:
 			##			inp=">>write:D0=316&read:A1=306&read:D0=1&"
 			##			out={"D0":{"cmd":wr","values":"316"},"A1":{"cmd":rd","values":"316"},"D0":{"cmd":rd","values":"1"}}
 			self.myLog(2,"msg from arduino: {}".format(inp))
-			out= output
+			out = output
 			out["Status"]="Online,No Data"
-			if len(inp)<3: return out
+			if len(inp)<3: return out 
 			if inp.find(">>notConfigured") >-1:
 				out["Status"]="Online, Not Configured"
 				return out
