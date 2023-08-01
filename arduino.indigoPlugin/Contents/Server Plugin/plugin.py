@@ -15,18 +15,18 @@ import traceback
 
 ## these are constants:
 ## commands send to arduino, short form to save bytes
-mapToArduino		={"read":"rd","onoff":"wr","analogwrite":"aw","momentup":"mU","momentdown":"mD","pulseup":"pU","pulsedown":"pD","rampdown":"rD","rampup":"rU","rampupdown":"rC","config":"cf","prog":"pg","status":"st","count":"Co","countreset":"Cr"}
+mapToArduino		= {"read":"rd","onoff":"wr","analogwrite":"aw","momentup":"mU","momentdown":"mD","pulseup":"pU","pulsedown":"pD","rampdown":"rD","rampup":"rU","rampupdown":"rC","config":"cf","prog":"pg","status":"st","count":"Co","countreset":"Cr"}
 # and on the way back expand again
-mapFromArduino		={"rd":"read","wr":"ONoff","aw":"analogWrite","mU":"momentUp","mD":"momentDown","pU":"pulseUp","pD":"pulseDown","rD":"rampDown","rU":"rampUp","rC":"rampUPDown","cf":"config","pg":"prog","st":"status","Co":"Count","Cr":"CountReset"}
+mapFromArduino		= {"rd":"read","wr":"ONoff","aw":"analogWrite","mU":"momentUp","mD":"momentDown","pU":"pulseUp","pD":"pulseDown","rD":"rampDown","rU":"rampUp","rC":"rampUPDown","cf":"config","pg":"prog","st":"status","Co":"Count","Cr":"CountReset"}
 
-analogMax			={"ESP1":1023,"ESP16":1023,"UNO":255,"MEGA":255,"FREE":100000,"mkr1000":1023}
-doNotUsePin         ={"MEGA":["D7","D10","D11","D12","D13","D50","D51","D52","D53"],"UNO":["D7","D10","D11","D12","D13"],"mkr1000":[""],"ESP1":[""],"ESP16":[""],"FREE":[""]}
-devTypes            ={"UNO":"arduino","MEGA":"arduino","mkr1000":"arduino","FREEE-Undefined":"arduino","ESP16":"arduino","ESP1":"arduino","sainsmart8-1":"sainsmart"}
+analogMax			= {"ESP1":1023,"ESP16":1023,"UNO":255,"MEGA":255,"FREE":100000,"mkr1000":1023}
+doNotUsePin         = {"MEGA":["D7","D10","D11","D12","D13","D50","D51","D52","D53"],"UNO":["D7","D10","D11","D12","D13"],"mkr1000":[""],"ESP1":[""],"ESP16":[""],"FREE":[""]}
+devTypes            = {"UNO":"arduino","MEGA":"arduino","mkr1000":"arduino","FREEE-Undefined":"arduino","ESP16":"arduino","ESP1":"arduino","sainsmart8-1":"sainsmart"}
 
-Version="7.9.9"
+Version				= "7.9.9"
 
-pluginName           ="arduino"
-thisPluginId         ="com.karlwachs."+pluginName
+pluginName           = "arduino"
+thisPluginId         = "com.karlwachs."+pluginName
 
 ################################################################################
 class Plugin(indigo.PluginBase):
@@ -36,7 +36,7 @@ class Plugin(indigo.PluginBase):
 		indigo.PluginBase.__init__(self, pluginId, pluginDisplayName, pluginVersion, pluginPrefs)
 		
 		self.pluginVersion		= pluginVersion
-		self.pathToPlugin       =os.getcwd()+"/"
+		self.pathToPlugin       = os.getcwd()+"/"
 		## = /Library/Application Support/Perceptive Automation/Indigo 6/Plugins/piBeacon.indigoPlugin/Contents/Server Plugin
 		p=max(0,self.pathToPlugin.find("/plugins/"))+1
 		self.indigoPath         = self.pathToPlugin[:p]
@@ -70,22 +70,22 @@ class Plugin(indigo.PluginBase):
 			self.sleep(1000)
 			exit(1)
 			return
-		self.updateStatesList   ={}
-		self.lastUpdate			={}
-		self.errorCount			={}
-		self.UpdateFrequency	={}
-		self.nextCheck			={}
+		self.updateStatesList   = {}
+		self.lastUpdate			= {}
+		self.errorCount			= {}
+		self.UpdateFrequency	= {}
+		self.nextCheck			= {}
 		self.debugLevel			= int(self.pluginPrefs.get("debugLevel", 0))
-		self.urltimeout			={}
-		self.maxNofpinsPerMessage={}
+		self.urltimeout			= {}
+		self.maxNofpinsPerMessage = {}
 		try:
 			self.setPinsDictLast= self.pluginPrefs["setPinsDictLast"]
 		except:
-			self.setPinsDictLast=indigo.Dict()
+			self.setPinsDictLast = indigo.Dict()
 		try:
-			self.programDictLast= self.pluginPrefs["programDictLast"]
+			self.programDictLast = self.pluginPrefs["programDictLast"]
 		except:
-			self.programDictLast=indigo.Dict()
+			self.programDictLast = indigo.Dict()
 		
 
 		
@@ -117,9 +117,9 @@ class Plugin(indigo.PluginBase):
 		try:
 			if self.startDEVS:
 				dev.stateListOrDisplayStateIdChanged()  # update  from device.xml info if changed
-			props =dev.pluginProps
+			props = dev.pluginProps
 			devType = dev.deviceTypeId
-			devS= str(dev.id)
+			devS = str(dev.id)
 
 			self.myLog(1,"deviceStartComm  for " +dev.name)
 
@@ -144,11 +144,11 @@ class Plugin(indigo.PluginBase):
 
 			self.myLog(1, " device :" + dev.name.replace(" ","") +" in deviceStartComm   refreshing  props :"+ str(props))
 
-			pinToDelete=[]
+			pinToDelete = []
 			for Pin in props:
 				if Pin.find("Pin_")>-1:
-					if Pin.find("Pin_F")>-1: pinToDelete.append(Pin);continue
-					if Pin.find("Pin_N")>-1: pinToDelete.append(Pin);continue
+					if Pin.find("Pin_F") > -1: pinToDelete.append(Pin);continue
+					if Pin.find("Pin_N") > -1: pinToDelete.append(Pin);continue
 
 					try:
 						state= dev.states[Pin]
@@ -156,11 +156,11 @@ class Plugin(indigo.PluginBase):
 							#dev.updateStateOnServer(Pin,"OFF")
 							self.addToStatesUpdateList(str(dev.id),Pin,"OFF")
 
-						if props[Pin] =="O":
-							if state =="0":
+						if props[Pin] == "O":
+							if state == "0":
 								#dev.updateStateOnServer(Pin,"ONoff:0")
 								self.addToStatesUpdateList(str(dev.id),Pin,"ONoff:0")
-							if state =="1":
+							if state == "1":
 								#dev.updateStateOnServer(Pin,"ONoff:1")
 								self.addToStatesUpdateList(str(dev.id),Pin,"ONoff:1")
 					except:
@@ -169,7 +169,7 @@ class Plugin(indigo.PluginBase):
 			for p in pinToDelete:
 				del props[p]
 		
-			props["address"]=props["IPNumber"]
+			props["address"] = props["IPNumber"]
 			dev.replacePluginPropsOnServer(props)
 
 
@@ -199,15 +199,15 @@ class Plugin(indigo.PluginBase):
 			props = dev.pluginProps
 			props["upDatePins"]=""
 		except:
-			props=""
-			props["upDatePins"]=""
+			props = ""
+			props["upDatePins"] = ""
 		for n in range(60):
 			pin = "Pin_D"+str(n)
 			if pin not in valuesDict: continue
 			if pin not in props: continue
 			if valuesDict[pin] == "OFF" and props[pin] != "OFF":
 			  props["upDatePins"] += pin
-		if  props["upDatePins"] !="":
+		if  props["upDatePins"] != "":
 			dev.replacePluginPropsOnServer(props)
 
 		return True, valuesDict
@@ -217,7 +217,7 @@ class Plugin(indigo.PluginBase):
 ####-----------------  set the geneeral config parameters---------
 	def validatePrefsConfigUi(self, valuesDict):
 
-		self.debugLevel			= int(valuesDict["debugLevel"])
+		self.debugLevel	= int(valuesDict["debugLevel"])
 
 		return True, valuesDict
 
@@ -253,7 +253,7 @@ class Plugin(indigo.PluginBase):
 	########################################
 	def runConcurrentThread(self):
 
-		count =0
+		count = 0
 		self.sleep(0.5)
 		self.myLog(1," looping to check devices for updates: ")
 		lastReset = time.time()
@@ -280,7 +280,7 @@ class Plugin(indigo.PluginBase):
 				self.sendMsgToSainsmart("Status" ,dev.id)# do a dummy read to set status
 
 
-			devS= dev.id
+			devS = dev.id
 			try: self.urltimeout[devS]              = int(props["urltimeout"])
 			except:  self.urltimeout[devS]          = 10
 			try: self.maxNofpinsPerMessage[devS]    = int(props["maxNofpinsPerMessage"])
@@ -334,55 +334,55 @@ class Plugin(indigo.PluginBase):
 								out = self.setArduinoStatesValues(dev.id)
 							elif devTypes[dev.deviceTypeId] =="sainsmart":
 								out =  self.sendMsgToSainsmart("Status" ,dev.id)# do a dummy read to set status
-							if out["Status"]=="Online, Configured" :
-								if props["suppressOfflineMessages"] =="0":
+							if out["Status"] == "Online, Configured" :
+								if props["suppressOfflineMessages"] == "0":
 									self.myLog(255,dev.name+" is "+out["Status"])
-								self.nextCheck[devS] +=100
+								self.nextCheck[devS] += 100
 							else:
-								self.lastUpdate[devS]=now
+								self.lastUpdate[devS] = now
 						else:
-							self.nextCheck[devS] +=100
+							self.nextCheck[devS] += 100
 
 							
 					now	=time.time()
 					if self.lastUpdate[devS]+ float(self.UpdateFrequency[devS]) <= now:
-						self.lastUpdate[devS]=now
+						self.lastUpdate[devS] = now
 						if dev.states["Status"]!="Online, Configured":
-							self.errorCount[devS] +=1
-							if (self.errorCount[devS] <10 or self.errorCount[devS]%100 ==1):
+							self.errorCount[devS] += 1
+							if (self.errorCount[devS] <10 or self.errorCount[devS]%100 == 1):
 								if props["suppressOfflineMessages"] =="0":
 									self.myLog(255,dev.name+"; current status is: "+ indigo.devices[deviceId].states["Status"]  +"  (test2)")
 								
-							self.nextCheck[devS] +=10
-							self.lastUpdate[devS]=now+ min(5,0.5* float(self.UpdateFrequency[devS]))
-							if   devTypes[dev.deviceTypeId] =="arduino":
+							self.nextCheck[devS] += 10
+							self.lastUpdate[devS] = now+ min(5,0.5* float(self.UpdateFrequency[devS]))
+							if   devTypes[dev.deviceTypeId] == "arduino":
 								out = self.sendMsgToArduino(mapToArduino["status"]+':&',dev.id)# do a dummy read to set status
-							elif devTypes[dev.deviceTypeId] =="sainsmart":
+							elif devTypes[dev.deviceTypeId] == "sainsmart":
 								out =  self.sendMsgToSainsmart("Status" ,dev.id)# do a dummy read to set status
 							if out["Status"]!="Online, Configured":
-									if   devTypes[dev.deviceTypeId] =="arduino":
+									if   devTypes[dev.deviceTypeId] == "arduino":
 										self.setArduinoConfigIO(deviceId)
 										out = self.setArduinoStatesValues(dev.id)
-									elif   devTypes[dev.deviceTypeId] =="sainsmart":
+									elif   devTypes[dev.deviceTypeId] == "sainsmart":
 										out =  self.sendMsgToSainsmart("Status" ,dev.id)# do a dummy read to set status
-									if out["Status"]=="Online, Configured" :
-										if  props["suppressOfflineMessages"] =="0":
+									if out["Status"] == "Online, Configured":
+										if  props["suppressOfflineMessages"] == "0":
 											self.myLog(255,dev.name+" is back online and configured")
 								
 						### read all eligible pins ------
-						if dev.states["Status"]=="Online, Configured" :
-							pinValues= self.readAllPins(dev)
+						if dev.states["Status"] == "Online, Configured" :
+							pinValues = self.readAllPins(dev)
 							if not "Status" in pinValues: continue
-							if pinValues["Status"]=="Online, Configured":
-									self.nextCheck[devS] +=100
-									self.lastUpdate[devS]=now
+							if pinValues["Status"] == "Online, Configured":
+									self.nextCheck[devS] += 100
+									self.lastUpdate[devS] = now
 									self.updatePinStates(dev,pinValues)
 									
 						 ### read all eligible pins end  ------
 					self.executeUpdateStatesList()
 				self.executeUpdateStatesList()
 				self.sleep(0.5)
-				count +=1
+				count += 1
 				
 			
 			
@@ -396,16 +396,16 @@ class Plugin(indigo.PluginBase):
 
 ####-----------------  read pins---------
 	def readAllPins(self, dev):
-		props=dev.pluginProps
-		out =""
-		pinValues={"Status":"Offline"}
+		props = dev.pluginProps
+		out = ""
+		pinValues = {"Status":"Offline"}
 		try:
 			if   devTypes[dev.deviceTypeId] =="arduino":
 				for Pin in props:
 					if "Pin_" not in Pin: continue			## props has all kinds of things pick Pin_D1 etc
-					pin=Pin.strip("Pin_")
+					pin = Pin.strip("Pin_")
 					if pin in doNotUsePin[dev.deviceTypeId]: continue
-					if props[Pin] =="I" or  props[Pin] =="U" or props[Pin].upper() =="Y" or props[Pin].upper() =="Z":	## must be and I =Input pin, ignore rest
+					if props[Pin] == "I" or  props[Pin] == "U" or props[Pin].upper() == "Y" or props[Pin].upper() == "Z":	## must be and I =Input pin, ignore rest
 						out += mapToArduino["read"]+":"+pin+"&"
 				if out !="":
 						pinValues = self.sendMsgToArduino(out+'&',dev.id)
@@ -425,15 +425,15 @@ class Plugin(indigo.PluginBase):
 
 ####-----------------  update device/pin states---------
 	def updatePinStates(self, dev,pinValues):
-		devType=dev.deviceTypeId
-		props=dev.pluginProps
+		devType = dev.deviceTypeId
+		props = dev.pluginProps
 		if   devTypes[dev.deviceTypeId] =="arduino":
 				for pin in pinValues:
 					if "Status" in pin: continue
 					try:
 						if pin.find("-") ==-1:
 							if pin in doNotUsePin[devType]: continue
-							Pin="Pin_"+pin
+							Pin = "Pin_"+pin
 							if Pin not in dev.states: continue
 							if dev.states[Pin] != pinValues[pin]["values"]:
 								#dev.updateStateOnServer(Pin,pinValues[pin]["values"])
@@ -446,12 +446,12 @@ class Plugin(indigo.PluginBase):
 ####----------------- simply set arduino to correct I/O config for each pin---------
 	def setArduinoConfigIO(self,deviceId):
 		# program arduino at startup to read / write (I/O)
-		output={"Status":"Offline"}
-		dev= indigo.devices[deviceId]
-		props=dev.pluginProps
+		output = {"Status":"Offline"}
+		dev = indigo.devices[deviceId]
+		props = dev.pluginProps
 		try:
 			if   devTypes[dev.deviceTypeId] =="arduino":
-				out=""
+				out = ""
 				for Pin in props:
 					if "Pin_" not in Pin: continue
 					## self.myLog(255, "Pin:" +str(Pin))
@@ -480,8 +480,8 @@ class Plugin(indigo.PluginBase):
 						#dev.updateStateOnServer(Pin,"OFF")
 						self.addToStatesUpdateList(str(dev.id),Pin,"OFF")
 
-				if out=="":
-					out=mapToArduino["prog"]+':S0=I&'
+				if out == "":
+					out = mapToArduino["prog"]+':S0=I&'
 				output = self.sendMsgToArduino(out,dev.id)
 				if "upDatePins"  in props and   props["upDatePins"] !="":
 					props["upDatePins"] = ""
@@ -503,9 +503,9 @@ class Plugin(indigo.PluginBase):
 		# program arduino at startup to read / write (I/O)
 		output={"Status":"Offline"}
 		try:
-			dev= indigo.devices[deviceId]
-			props=dev.pluginProps
-			out=""
+			dev = indigo.devices[deviceId]
+			props = dev.pluginProps
+			out = ""
 			pinsToUpdate = pinsToUpdate.upper()
 			for Pin in props:
 				##self.myLog(255, " props "+ str(Pin))
@@ -547,7 +547,7 @@ class Plugin(indigo.PluginBase):
 					   out += mapToArduino["CountReset".lower()]+":" + pin + '&'
 
 
-			if out!="":
+			if out != "":
 				self.sleep(0.1) ##  wait for things to settle down
 				output = self.sendMsgToArduino(out+'&',dev.id)
 		
@@ -582,7 +582,7 @@ class Plugin(indigo.PluginBase):
 
 ####----------------- ACTIONs  ---------
 	def reloadArduinoDeviceMenu(self, valuesDict, typeID):
-		deviceId	=int(valuesDict["device"])
+		deviceId = int(valuesDict["device"])
 		self.setArduinoConfigIO(deviceId)
 		self.setArduinoStatesValues(deviceId)
 		return  valuesDict
@@ -599,13 +599,13 @@ class Plugin(indigo.PluginBase):
 ####----------------- ACTIONs  ---------
 	def programCALLBACKaction(self, action1):
 
-		output= self.setProgram(action1.props,updateIndigo=True)
+		output = self.setProgram(action1.props,updateIndigo=True)
 		self.myLog(2,str(output))
 		try:
-				dev=indigo.devices[int(action1.props["device"])]
+				dev = indigo.devices[int(action1.props["device"])]
 		except:
 				try:
-					dev=indigo.devices[action1.props["device"]]
+					dev = indigo.devices[action1.props["device"]]
 				except:
 					self.myLog(255, " bad device  ID / name " + str(action1.props))
 					return
@@ -661,10 +661,10 @@ class Plugin(indigo.PluginBase):
 	
 	
 		try:
-				dev=indigo.devices[int(action1.props["device"])]
+				dev = indigo.devices[int(action1.props["device"])]
 		except:
 				try:
-					dev=indigo.devices[action1.props["device"]]
+					dev = indigo.devices[action1.props["device"]]
 				except:
 					self.myLog(255, " bad device  ID / name " + str(action1.props))
 					return
@@ -687,20 +687,20 @@ class Plugin(indigo.PluginBase):
 ####----------------- ACTIONs  ---------
 	def setPin(self, aprops1,updateIndigo=True):
 		try:
-			output ={}
-			key=aprops1.keys()
-			aprops ={}
+			output = {}
+			key = aprops1.keys()
+			aprops = {}
 			for p in key:
 				ps = str(p).lower()
-				aprops[ps] =aprops1[p]
+				aprops[ps] = aprops1[p]
 
 			try:
-				deviceId	=int(aprops["device"])
+				deviceId = int(aprops["device"])
 				dev=indigo.devices[deviceId]
 			except:
 				try:
 					dev=indigo.devices[aprops["device"]]
-					deviceId	=dev.id
+					deviceId = dev.id
 				except:
 					self.myLog(255, " bad device  ID / name " + str(aprops1))
 					return {}
@@ -727,13 +727,13 @@ class Plugin(indigo.PluginBase):
 			
 	def setPinArduino(self, deviceId, dev, aprops, updateIndigo=True):
 		try:
-			CMD=""; ONoff="";aValue="";msecUP="";msecDOWN=""
+			CMD = ""; ONoff = "";aValue = "";msecUP = "";msecDOWN = ""
 			
-			pin="D2"
+			pin = "D2"
 			if "pin".lower() in  aprops:
 				pin = aprops["pin"].upper()
 
-			Pin="Pin_"+pin
+			Pin = "Pin_"+pin
 
 			if "CMD".lower() in aprops:
 				CMD = aprops["CMD".lower()]
@@ -754,7 +754,7 @@ class Plugin(indigo.PluginBase):
 							aValue="0"
 			
 			if "msecUP".lower()	 in aprops:
-				msecUP	=aprops["msecUP".lower()]
+				msecUP	= aprops["msecUP".lower()]
 				try:
 					int(msecUP)
 				except:
@@ -789,9 +789,9 @@ class Plugin(indigo.PluginBase):
 
 			updateDev=False
 
-			cmd= mapToArduino[CMD.lower()]+":"
-			cms= CMD+":"
-			cmd0=""
+			cmd = mapToArduino[CMD.lower()]+":"
+			cms = CMD+":"
+			cmd0 = ""
 
 		##self.myLog(2, "arduino [device] \n"+ str(self.ARDUINO[device]))
 			if  cmd !="config" and cmd != "rd:" and cmd.lower() !="cr:":  # if not set to write, first send command   prog to OUTPUT
@@ -802,11 +802,11 @@ class Plugin(indigo.PluginBase):
 						props[Pin]="O"
 			
 			if CMD.lower() =="config".lower():
-				cmd=cmd
-				cms=cms
+				cmd = cmd
+				cms = cms
 			if CMD.lower() =="status".lower():
-				cmd=cmd
-				cms=cms
+				cmd = cmd
+				cms = cms
 
 			elif CMD.lower() == "read" :
 				cmd += pin
@@ -816,57 +816,57 @@ class Plugin(indigo.PluginBase):
 				if lowHIGH=="":
 					self.myLog(1," error in action command, lowHIGH missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+lowHIGH
-				cms+=lowHIGH
+				cmd += pin+	'='+lowHIGH
+				cms += lowHIGH
 
 			elif CMD.lower() =="analogWrite".lower():
 				if aValue=="":
 					self.myLog(1," error in action command, aValue missing: "+str(aprops))
 					return output
-				cmd+=pin+	'='+str(aValue)
-				cms+=aValue
+				cmd += pin+	'='+str(aValue)
+				cms += aValue
 
 			elif CMD.lower() =="momentUp".lower():
 				if msecUP=="" :
 					self.myLog(1," error in action command, msecUP missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecUP
-				cms+=msecUP
+				cmd += pin+	'='+msecUP
+				cms += msecUP
 
 			elif CMD.lower() =="momentDown".lower():
 				if msecDOWN =="":
 					self.myLog(1," error in action command, msecDOWN missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecDOWN
-				cms+=msecDOWN
+				cmd += pin+	'='+msecDOWN
+				cms += msecDOWN
 
 			elif CMD.lower() =="pulseUp".lower():
 				if msecUP=="" or msecDOWN =="":
 					self.myLog(1," error in action command, msecUP/DOWN missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecUP+','+msecDOWN
-				cms+=msecUP+','+msecDOWN
+				cmd += pin+	'='+msecUP+','+msecDOWN
+				cms += msecUP+','+msecDOWN
 
 			elif CMD.lower() =="pulseDown".lower():
 				if msecUP=="" or msecDOWN =="":
 					self.myLog(1," error in action command, msecUP/DOWN missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecUP+','+msecDOWN
-				cms+=msecUP+','+msecDOWN
+				cmd += pin+	'='+msecUP+','+msecDOWN
+				cms += msecUP+','+msecDOWN
 	
 			elif CMD.lower() =="rampUp".lower():
 				if msecUP=="":
 					self.myLog(1," error in action command, msecUP missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecUP+","+minValue+","+maxValue
-				cms+=msecUP+","+minValue+","+maxValue
+				cmd += pin+	'='+msecUP+","+minValue+","+maxValue
+				cms += msecUP+","+minValue+","+maxValue
 
 			elif CMD.lower() =="rampDown".lower():
 				if msecDOWN=="":
 					self.myLog(1," error in action command, msecDown missing: "+str(aprops) )
 					return output
-				cmd+=pin+	'='+msecDOWN+","+minValue+","+maxValue
-				cms+=msecDOWN+","+minValue+","+maxValue
+				cmd += pin+	'='+msecDOWN+","+minValue+","+maxValue
+				cms += msecDOWN+","+minValue+","+maxValue
 
 			elif CMD.lower() =="rampUPDown".lower():
 				if msecDOWN=="":
@@ -914,9 +914,9 @@ class Plugin(indigo.PluginBase):
 						#dev.updateStateOnServer(Pin,cms)
 						self.addToStatesUpdateList(str(dev.id),Pin,cms)
 				if updateDev:
-					dev=indigo.devices[deviceId]
+					dev = indigo.devices[deviceId]
 					props= dev.pluginProps
-					props[Pin]="O"
+					props[Pin] = "O"
 					dev.replacePluginPropsOnServer(props)
 
 
@@ -929,7 +929,7 @@ class Plugin(indigo.PluginBase):
 	def setProgram(self, aprops, updateIndigo=True):
 
 		try:
-			ret=""
+			ret = ""
 			self.myLog(1, "set prog: "+ str(aprops))
 			key		= aprops.keys()
 			for p in key:
@@ -961,9 +961,9 @@ class Plugin(indigo.PluginBase):
 			
 			
 			if updateIndigo:
-				dev=indigo.devices[deviceId]
-				props= dev.pluginProps
-				props[Pin]=IO
+				dev = indigo.devices[deviceId]
+				props = dev.pluginProps
+				props[Pin] = IO
 				dev.replacePluginPropsOnServer(props)
 				#dev.updateStateOnServer(Pin,IO)
 				self.addToStatesUpdateList(str(dev.id),Pin,IO)
@@ -985,9 +985,9 @@ class Plugin(indigo.PluginBase):
 			except:
 				lastOnline= "Offline"
 			socket.setdefaulttimeout(self.urltimeout[devS]) # set timeout for url
-			output={}
-			output["Status"]="Offline"
-			Online="OffLine"
+			output = {}
+			output["Status"] = "Offline"
+			Online = "OffLine"
 			Onlinechanged = False
 			IPNumber = str(dev.pluginProps["IPNumber"])
 			props = dev.pluginProps
@@ -997,9 +997,9 @@ class Plugin(indigo.PluginBase):
 			nPacks = int(count //self.maxNofpinsPerMessage[devS])
 			items = out.split("&")
 			for i in range(0,nPacks+1):
-				out =""
-				j0= self.maxNofpinsPerMessage[devS]*i
-				j1= self.maxNofpinsPerMessage[devS]*(i+1)
+				out = ""
+				j0 = self.maxNofpinsPerMessage[devS]*i
+				j1 = self.maxNofpinsPerMessage[devS]*(i+1)
 				for j in range( j0, min(j1,count)  ):
 					out+= items[j] +'&'
 				self.myLog(2, "i, out  {}  {}".format(i, items))
@@ -1008,8 +1008,8 @@ class Plugin(indigo.PluginBase):
 					self.sleep(0.1)
 				self.lasthttp = time.time()
 				try:
-					start= time.time()
-					url='http://'+IPNumber+'/?'+out+'?'
+					start = time.time()
+					url = 'http://'+IPNumber+'/?'+out+'?'
 					self.myLog(2,url)
 					try:
 						ret= str(requests.get(url, timeout=8).content)
@@ -1019,11 +1019,11 @@ class Plugin(indigo.PluginBase):
 						Online ="Online, Configured"
 						if output["Status"]=="Online, Not Configured":
 							Online="Online, Not Configured"
-							self.errorCount[devS] +=1
+							self.errorCount[devS] += 1
 							self.myLog(2,"not configured, break loop {}".format(output))
 							break
 						else:
-							self.errorCount[devS]=0
+							self.errorCount[devS] = 0
 						self.lasthttp = time.time()
 					except Exception as e:
 						if self.errorCount[devS] < 5:
@@ -1039,13 +1039,13 @@ class Plugin(indigo.PluginBase):
 						if "{}".format(e).find("None") == -1: self.logger.error("", exc_info=True)
 					output["Status"]="Offline"
 					Online="Offline"
-					self.errorCount[devS] +=1
+					self.errorCount[devS] += 1
 
-				if self.errorCount[devS] ==0:
+				if self.errorCount[devS] == 0:
 					self.myLog(2,str(output))
 				self.sleep(0.05)
 
-			if lastOnline !=Online and deviceId !=0:
+			if lastOnline !=Online and deviceId != 0:
 				#dev.updateStateOnServer("Status",Online)
 				self.addToStatesUpdateList(str(deviceId),"Status",Online)
 			return output
@@ -1057,55 +1057,60 @@ class Plugin(indigo.PluginBase):
 ####----------------- parse and unparse arduino com ---------
 	def parseFromArduino(self, inp, output):
 #		try:
-			##			inp=">>write:D0=316&read:A1=306&read:D0=1&"
-			##			out={"D0":{"cmd":wr","values":"316"},"A1":{"cmd":rd","values":"316"},"D0":{"cmd":rd","values":"1"}}
+			##			inp=">>wr:D0=316&rd:A1=306&rd:D0=1&"
+			##			out={"D0":{"cmd":write","values":"316"},"A1":{"cmd":read","values":"316"},"D0":{"cmd":read","values":"1"}}
 			self.myLog(2,"msg from arduino: {}".format(inp))
 			out = output
-			out["Status"]="Online,No Data"
+			out["Status"] = "Online,No Data"
 			if len(inp)<3: return out 
 			if inp.find(">>notConfigured") >-1:
-				out["Status"]="Online, Not Configured"
+				out["Status"] = "Online, Not Configured"
 				return out
 			if inp.find(">>Configured") >-1:
-				out["Status"]="Online, Configured"
+				out["Status"] = "Online, Configured"
 				return out
-			out["Status"]="Online, Configured"
+			out["Status"] = "Online, Configured"
 			
-			o= inp.strip("&\r\n").strip(">").replace("&&","&")  ## fix for error in INO file, sends 2 && sometimes
-			p = o.split("&") ## one element for each pin
-			
-			for p1 in p:  ## looks like:  rd:A1=12345&  or rd:S1=aklsdflksadf;=.,45=&   NO & in the middle !!
-				pK= p1.find(":") ## find FIRST occurence allow for  : in string
-				#self.myLog(2, "parse 1 "+ str(pK)+ " " + str(p1) )
-				if pK >0:
-					p2 = [p1[0:pK],p1[pK+1:len(p1)]] # split command and rest
-					#self.myLog(2, "parse p2 "+ str(p2))
+			o = inp.strip("&\r\n").strip(">").replace("&&","&")  ## fix for error in INO file, sends 2 && sometimes
+			p = o.split("&") ## one element for each pin --> [write:D0=316,read:A1=306,read:D0=1,]
+			pin = "-1"
+
+			for p1 in p:  ## looks like: write:D0=316   or  read:A1=306  or read:D0=1  or ""
+
+				if len(p1) < 2: continue # in case string is not complete or empty
+
+
+				pK = p1.find(":") ## find FIRST occurence allow for  : in string
+				self.myLog(2, "parse 1 "+ str(pK)+ " " + str(p1) )
+				if pK > 0:
+					p2 = [p1[0:pK],p1[pK+1:len(p1)]] # split command and rest  -->  [ rd, a1=306 ]
+					self.myLog(2, "parse p2 "+ str(p2))
 					try:
-						cmd=mapFromArduino[p2[0]]
-						#self.myLog(2, "parse cmd "+ str(cmd))
+						cmd = mapFromArduino[p2[0]]  # -->  rd--> read, wr --> write ...
+						self.myLog(2, "parse cmd "+ str(cmd))
 						try:
-							pE= p2[1].find("=")  ## find FIRST occurence allow for  = in string
-							#self.myLog(2, "parse pE "+ str(pE))
-							if pE> 0:
-								p3=[p2[1][0:pE],p2[1][pE+1:len(p2[1])]]  # split pin# and values
-								pin=p3[0]
-								#self.myLog(2, "parse pE>0 "+ str(pin)+" "+  str(p3))
+							pE = p2[1].find("=")  ## find FIRST occurence allow for  = in string --> 2 in example
+							self.myLog(2, "parse pE "+ str(pE))
+							if pE > 0:
+								p3 = [ p2[1][0:pE], p2[1][pE+1:len(p2[1])] ]  # split pin# and values  --> [ A1, 306 ]
+								pin = p3[0] # --> A1
+								self.myLog(2, "parse pE>0 "+ str(pin)+" "+  str(p3))
 								try:
-									values=p3[1]
+									values = p3[1] # --> 306
 								except:
-									pin = p2[1]
-									values= ""
+									pin = p2[1]  # just in case
+									values = ""
 							else:
-								pin = p2[1]
+								pin = p2[1]  #  == all of second part here it would be A1=306 
 								values= ""
 						except:
-							cmd="";pin="-1"; values=""
+							cmd = "";pin = "-1"; values = "" # unknow error
 					except:
-						cmd="";pin="-1"; values=""
+						cmd = "";pin = "-1"; values = ""  # unknow error
 							
-					out[pin]={"cmd":cmd, "values":values}
+					out[pin] = {"cmd":cmd, "values":values}
 				else:
-					out[pin]={"cmd":"", "values":""}
+					out[pin]=  {"cmd":"", "values":""} # empty 
 				
 			return out
 #		except:
@@ -1306,7 +1311,7 @@ class Plugin(indigo.PluginBase):
 
 ####----------------- logfile  ---------
 	def myLog(self,msgLevel,text,type=""):
-		if msgLevel ==0: return
+		if msgLevel == 0: return
 		if msgLevel ==-1:
 			indigo.server.log("--------------------------------------------------------------")
 			indigo.server.log(text)
@@ -1317,11 +1322,11 @@ class Plugin(indigo.PluginBase):
 			self.errorLog(text)
 			self.errorLog("----------------------------------------------------------------------------------" )
 			return
-		if msgLevel ==255:
+		if msgLevel == 255:
 			if type =="": indigo.server.log(text)
 			else:		  indigo.server.log(text,type=type)
 			return
-		if self.debugLevel ==255:
+		if self.debugLevel == 255:
 			if type =="": indigo.server.log(text)
 			else:		  indigo.server.log(text,type=type)
 			return
