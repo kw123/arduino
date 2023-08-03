@@ -538,7 +538,7 @@ class Plugin(indigo.PluginBase):
 							elif cmdValue[0].find("rampUp") > -1:
 								cmdValue[0] = "analogWrite"
 								cmdValue[1] = cmdValue[1].split(",")[2]
-							out+=mapToArduino[cmdValue[0].lower()]+':'+pin+'='+cmdValue[1]+'&'
+							out+=mapToArduino.get(cmdValue[0].lower(),"rd")+':'+pin+'='+cmdValue[1]+'&'
 					except Exception as e :
 						self.myLog(255, " error updating Pin state cmdValue {} {} {} ".format(Pin, state, cmdValue))
 						self.logger.error("", exc_info=True)
@@ -789,7 +789,7 @@ class Plugin(indigo.PluginBase):
 
 			updateDev=False
 
-			cmd = mapToArduino[CMD.lower()]+":"
+			cmd = mapToArduino.get(CMD.lower(),"rd")+":"
 			cms = CMD+":"
 			cmd0 = ""
 
@@ -1012,12 +1012,12 @@ class Plugin(indigo.PluginBase):
 					url = 'http://'+IPNumber+'/?'+out+'?'
 					self.myLog(2,url)
 					try:
-						ret= str(requests.get(url, timeout=8).content)
+						ret = str(requests.get(url, timeout=8).content)
 						output = self.parseFromArduino(ret,output)
 						self.myLog(2,"http round trip : {}[sec]".format(time.time()-start))
 						
 						Online ="Online, Configured"
-						if output["Status"]=="Online, Not Configured":
+						if output["Status"] == "Online, Not Configured":
 							Online="Online, Not Configured"
 							self.errorCount[devS] += 1
 							self.myLog(2,"not configured, break loop {}".format(output))
@@ -1028,7 +1028,9 @@ class Plugin(indigo.PluginBase):
 					except Exception as e:
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
-								self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
+								self.myLog(255,"connection to arduino >{}< timed out ".format(dev.name))
+							elif str(e).find("Failed to establish a new connection" ) >-1:
+								self.myLog(255, "connection to arduino >{} failed".format(dev.name) )
 							else:
 								self.myLog(255, "connection to arduino >{}".format(dev.name) )
 								self.logger.error("", exc_info=True)
@@ -1059,42 +1061,45 @@ class Plugin(indigo.PluginBase):
 #		try:
 			##			inp=">>wr:D0=316&rd:A1=306&rd:D0=1&"
 			##			out={"D0":{"cmd":write","values":"316"},"A1":{"cmd":read","values":"316"},"D0":{"cmd":read","values":"1"}}
-			self.myLog(2,"msg from arduino: {}".format(inp))
+			self.myLog(2, "msg from arduino: {}".format(inp))
 			out = output
+			inp = str(inp).strip("b") # for unicode data remove the byte indicator
+			inp = str(inp).strip(">>") # remove >>
+
 			out["Status"] = "Online,No Data"
-			if len(inp)<3: return out 
-			if inp.find(">>notConfigured") >-1:
+			if len(inp) < 3: return out 
+			if inp.find(">>notConfigured") > -1:
 				out["Status"] = "Online, Not Configured"
 				return out
-			if inp.find(">>Configured") >-1:
+			if inp.find(">>Configured") > -1:
 				out["Status"] = "Online, Configured"
 				return out
 			out["Status"] = "Online, Configured"
 			
 			o = inp.strip("&\r\n").strip(">").replace("&&","&")  ## fix for error in INO file, sends 2 && sometimes
-			p = o.split("&") ## one element for each pin --> [write:D0=316,read:A1=306,read:D0=1,]
+			p = o.split("&") ## one element for each pin --> [wr:D0=316,rd:A1=306,rd:D0=1,]
 			pin = "-1"
 
-			for p1 in p:  ## looks like: write:D0=316   or  read:A1=306  or read:D0=1  or ""
+			for p1 in p:  ## looks like: wr:D0=316   or  rd:A1=306  or rd:D0=1  or ""
 
 				if len(p1) < 2: continue # in case string is not complete or empty
 
 
 				pK = p1.find(":") ## find FIRST occurence allow for  : in string
-				self.myLog(2, "parse 1 "+ str(pK)+ " " + str(p1) )
-				if pK > 0:
-					p2 = [p1[0:pK],p1[pK+1:len(p1)]] # split command and rest  -->  [ rd, a1=306 ]
-					self.myLog(2, "parse p2 "+ str(p2))
+				self.myLog(2, "parse 1 {} {}".format(pK, p1))
+				if pK > 1:
+					p2 = [p1[pK-2:pK],p1[pK+1:len(p1)]] # split command and rest  -->  [ rd, a1=306 ], all cmds are 2 cahr long, take last 2 char only
+					self.myLog(2, "parse p2 {}".format(p2))
 					try:
-						cmd = mapFromArduino[p2[0]]  # -->  rd--> read, wr --> write ...
-						self.myLog(2, "parse cmd "+ str(cmd))
+						cmd = mapFromArduino.get(p2[0],"rd")  # -->  rd--> read, wr --> write ...
+						self.myLog(2, "parse cmd {}".format(cmd))
 						try:
 							pE = p2[1].find("=")  ## find FIRST occurence allow for  = in string --> 2 in example
-							self.myLog(2, "parse pE "+ str(pE))
+							self.myLog(2, "parse pE {}".format(pE))
 							if pE > 0:
 								p3 = [ p2[1][0:pE], p2[1][pE+1:len(p2[1])] ]  # split pin# and values  --> [ A1, 306 ]
 								pin = p3[0] # --> A1
-								self.myLog(2, "parse pE>0 "+ str(pin)+" "+  str(p3))
+								self.myLog(2, "parse pE>0 {} {}".format(pin, p3))
 								try:
 									values = p3[1] # --> 306
 								except:
@@ -1211,7 +1216,7 @@ class Plugin(indigo.PluginBase):
 						if output["relay"] == "":  # do it again, have to be on the right page
 							url='http://'+str(dev.pluginProps["IPNumber"])+'/'+str(dev.pluginProps["portNumber"])+"/"+page
 							self.myLog(2,"Sainsmart redo page   "+ url)
-							ret= str(requests.get(url, timeout=8).content)
+							ret = str(requests.get(url, timeout=8).content)
 							output = self.parseFromSainsmart(ret,relayName)
 							#self.myLog(255,"http round trip : "+str(time.time()-start)+"[sec]\n  "+ str(ret) +"\n  "+ str(output))
 						
@@ -1232,6 +1237,8 @@ class Plugin(indigo.PluginBase):
 								if self.errorCount[devS] < 5:
 									if str(e).find("timed out" ) >-1:
 										self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
+									elif str(e).find("Failed to establish a new connection" ) >-1:
+										self.myLog(255, "connection to arduino >{} failed".format(dev.name) )
 									else:
 										self.myLog(255, "connection to arduino >{}".format(dev.name))
 										self.logger.error("", exc_info=True)
@@ -1243,6 +1250,8 @@ class Plugin(indigo.PluginBase):
 						if self.errorCount[devS] < 5:
 							if str(e).find("timed out" ) >-1:
 								self.myLog(2,"connection to arduino >{}< timed out ".format(dev.name))
+							elif str(e).find("Failed to establish a new connection" ) >-1:
+								self.myLog(255, "connection to arduino >{} failed".format(dev.name) )
 							else:
 								self.myLog(255, "connection to arduino >{}".format(dev.name))
 								self.logger.error("", exc_info=True)
